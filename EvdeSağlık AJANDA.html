@@ -1,0 +1,500 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Ajandam</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Düzen: solda 12 aylık yıl takvimi, sağda seçili gün, zamanı gelen hatırlatmalar, form ve kişiler. */
+:root {
+  --bg: #f1f3f8;
+  --surface: #ffffff;
+  --ink: #141a2c;
+  --muted: #59627a;
+  --line: #d8ddea;
+  --accent: #2b3a8c;
+  --accent-ink: #ffffff;
+  --accent-soft: #e3e7f8;
+  --accent-mid: #c3cbf0;
+  --wa: #17703f;
+  --wa-ink: #ffffff;
+  --warn: #9a4a05;
+  --warn-soft: #fcecd8;
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1220; --surface: #171c30; --ink: #e8ebf6; --muted: #9ba4c0; --line: #2a3150;
+    --accent: #95a3ff; --accent-ink: #0e1220; --accent-soft: #232b55; --accent-mid: #37428a;
+    --wa: #3fcf8e; --wa-ink: #07140d; --warn: #f2a65f; --warn-soft: #382816;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1220; --surface: #171c30; --ink: #e8ebf6; --muted: #9ba4c0; --line: #2a3150;
+  --accent: #95a3ff; --accent-ink: #0e1220; --accent-soft: #232b55; --accent-mid: #37428a;
+  --wa: #3fcf8e; --wa-ink: #07140d; --warn: #f2a65f; --warn-soft: #382816;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+.brand h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(38px, 6vw, 56px); line-height: 1; margin: 0; letter-spacing: -0.01em; }
+.brand p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+.yearbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.yearbar .y { font-family: var(--font-display); font-size: 40px; line-height: 1; min-width: 4ch; text-align: center; font-variant-numeric: tabular-nums; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 14px; font-weight: 500; min-height: 40px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.icon { padding: 8px 12px; }
+.btn.small { min-height: 34px; padding: 5px 10px; font-size: 13px; }
+.btn.danger { color: var(--warn); }
+.btn.danger[data-armed="1"] { background: var(--warn-soft); border-color: var(--warn); }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (min-width: 1000px) { .layout { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+.col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.year { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.month { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 12px 10px; min-width: 0; }
+.month h3 { margin: 0 0 8px; display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.month h3 .mc { font-family: var(--font-mono); font-weight: 400; color: var(--muted); letter-spacing: 0; text-transform: none; font-size: 12px; }
+.dow, .days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+.dow span { text-align: center; font-size: 10.5px; color: var(--muted); padding-bottom: 3px; }
+.day { position: relative; aspect-ratio: 1 / 1; border: 0; background: transparent; border-radius: 6px; font-size: 12.5px; font-variant-numeric: tabular-nums; padding: 0; display: grid; place-items: center; }
+.day:hover { background: var(--accent-soft); }
+.day.has { background: var(--accent-soft); font-weight: 600; }
+.day.has.many { background: var(--accent-mid); }
+.day.has::after { content: ""; position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+.day.today { box-shadow: inset 0 0 0 1.5px var(--accent); font-weight: 700; }
+.day[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.day[aria-pressed="true"].has::after { background: var(--accent-ink); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.panel h2 { margin: 0 0 4px; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.panel .hint { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+.panel.due { border-color: var(--warn); }
+.panel.due h2 { color: var(--warn); }
+
+.dayhead { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+.dayhead .num { font-family: var(--font-display); font-size: 64px; line-height: 0.9; }
+.dayhead .txt { display: flex; flex-direction: column; }
+.dayhead .txt b { font-size: 17px; }
+.dayhead .txt span { color: var(--muted); font-size: 13px; }
+
+.list { display: flex; flex-direction: column; gap: 10px; }
+.appt { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; }
+.appt .time { font-family: var(--font-mono); font-size: 18px; font-weight: 500; grid-row: span 2; align-self: start; padding-top: 1px; }
+.appt .title { font-weight: 600; overflow-wrap: anywhere; }
+.appt .meta { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.appt .who { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.tag { font-size: 12px; background: var(--accent-soft); border-radius: 999px; padding: 2px 10px; }
+.appt .acts { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 6px; }
+.empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+
+.due-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-top: 10px; background: var(--bg); }
+.due-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.due-top b { overflow-wrap: anywhere; }
+.due-card .sub { margin: 2px 0 8px; color: var(--muted); font-size: 13px; }
+.send-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.send-row .who { flex: 1 1 140px; min-width: 0; display: flex; flex-direction: column; }
+.send-row .who small { color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+a.wa { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 14px; border-radius: 8px; background: var(--wa); color: var(--wa-ink); font-weight: 600; font-size: 14px; text-decoration: none; }
+a.wa:hover { filter: brightness(1.1); }
+.btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+
+.up { display: flex; flex-direction: column; }
+.up button { display: grid; grid-template-columns: 58px 54px minmax(0, 1fr); gap: 10px; text-align: left; border: 0; border-top: 1px solid var(--line); background: transparent; padding: 9px 2px; align-items: baseline; }
+.up button:first-child, .up h3 + button { border-top: 0; }
+.up h3 { margin: 14px 0 2px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.up h3:first-child { margin-top: 0; }
+.up .m { grid-column: 3; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.seg { display: flex; gap: 8px; margin: 8px 0 12px; }
+.searchrow { margin-bottom: 8px; }
+.up button:hover { background: var(--accent-soft); }
+.up .d { font-size: 13px; color: var(--muted); }
+.up .t { font-family: var(--font-mono); font-size: 13px; }
+.up .n { overflow-wrap: anywhere; }
+
+form { display: flex; flex-direction: column; gap: 12px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; min-width: 0; }
+label small { font-weight: 400; color: var(--muted); }
+input[type="text"], input[type="tel"], input[type="date"], input[type="time"], select, textarea {
+  width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 9px 11px; font-weight: 400; min-height: 40px;
+}
+textarea { resize: vertical; }
+fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; margin: 0; min-width: 0; }
+legend { font-size: 13px; font-weight: 600; padding: 0 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { flex-direction: row; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-weight: 500; background: var(--bg); cursor: pointer; }
+.chip:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); }
+.chip input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.status { font-size: 13px; color: var(--muted); min-height: 1.4em; }
+.status.err { color: var(--warn); }
+
+.contacts-list { display: flex; flex-direction: column; margin-top: 12px; }
+.crow { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.crow .nm { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.crow .nm small { color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+.note { font-size: 12.5px; color: var(--muted); margin: 0; }
+@media (prefers-reduced-motion: no-preference) { .day, .btn { transition: background-color .12s, border-color .12s; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Ajandam</h1>
+      <p id="modeNote">Kayıt durumu kontrol ediliyor…</p>
+    </div>
+    <div class="yearbar" role="group" aria-label="Yıl seçimi">
+      <button type="button" class="btn icon" data-action="prev-year" aria-label="Önceki yıl">←</button>
+      <div class="y" id="yearLabel">2026</div>
+      <button type="button" class="btn icon" data-action="next-year" aria-label="Sonraki yıl">→</button>
+      <button type="button" class="btn" data-action="today">Bugün</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="col">
+      <div class="year" id="year" aria-label="Yıllık takvim"></div>
+    </div>
+
+    <div class="col">
+      <section class="panel due" id="duePanel" aria-live="polite">
+        <h2>Zamanı gelen hatırlatmalar</h2>
+        <p class="hint">Mesajlar kendiliğinden gitmez. “WhatsApp’ta aç” hazır mesajla WhatsApp’ı açar, göndermek için orada Gönder’e basarsın. Bu liste sayfa açıkken güncellenir.</p>
+        <div id="dueList"></div>
+      </section>
+
+      <section class="panel">
+        <div class="dayhead" id="dayHead"></div>
+        <div class="list" id="dayList"></div>
+      </section>
+
+      <section class="panel">
+        <h2 id="formTitle">Randevu ekle</h2>
+        <form id="apptForm" autocomplete="off">
+          <div class="grid2">
+            <label for="f-title">Başlık<input id="f-title" name="title" type="text" required placeholder="Örn. Diş kontrolü"></label>
+            <label for="f-who">Kişi veya yer<input id="f-who" name="who" type="text" placeholder="Örn. Dr. Aylin Kaya"></label>
+            <label for="f-date">Tarih<input id="f-date" name="date" type="date" required></label>
+            <label for="f-time">Saat<input id="f-time" name="time" type="time" required value="10:00"></label>
+          </div>
+          <label for="f-lead">Hatırlatma zamanı
+            <select id="f-lead" name="lead"></select>
+          </label>
+          <fieldset>
+            <legend>WhatsApp hatırlatması kimlere gitsin?</legend>
+            <div class="chips" id="pick"></div>
+          </fieldset>
+          <label for="f-msg">Mesaj <small>Boş bırakırsan hazır metin kullanılır. Kullanabileceğin alanlar: {ad} {baslik} {kisi} {tarih} {saat}</small>
+            <textarea id="f-msg" name="message" rows="3" placeholder="Merhaba {ad}, {tarih} saat {saat} için “{baslik}” randevusunu hatırlatmak istedim."></textarea>
+          </label>
+          <div class="btnrow">
+            <button type="submit" class="btn primary" id="saveBtn">Kaydet</button>
+            <button type="button" class="btn" id="cancelEdit" data-action="cancel-edit" hidden>Vazgeç</button>
+            <span class="status" id="formStatus" role="status"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Randevu listesi</h2>
+        <div class="seg" role="group" aria-label="Liste türü">
+          <button type="button" class="btn small" data-action="tab" data-tab="up" aria-pressed="true">Yaklaşan</button>
+          <button type="button" class="btn small" data-action="tab" data-tab="past" aria-pressed="false">Geçmiş</button>
+        </div>
+        <label for="q" class="searchrow" id="searchWrap" hidden>Ara
+          <input id="q" type="text" placeholder="Başlık, kişi veya yer">
+        </label>
+        <div class="up" id="upList"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Kişiler</h2>
+        <p class="hint">Numarayı 0532 000 00 00 ya da 90532… biçiminde yazabilirsin.</p>
+        <form id="contactForm" autocomplete="off">
+          <div class="grid2">
+            <label for="c-name">Ad soyad<input id="c-name" type="text" required placeholder="Örn. Elif Demir"></label>
+            <label for="c-phone">WhatsApp numarası<input id="c-phone" type="tel" required placeholder="05xx xxx xx xx"></label>
+          </div>
+          <div class="btnrow">
+            <button type="submit" class="btn primary">Kişi ekle</button>
+            <span class="status" id="contactStatus" role="status"></span>
+          </div>
+        </form>
+        <div class="contacts-list" id="contactList"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var MONTHS = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+  var DOW = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
+  var FULLDOW = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+  var LEADS = [[0,"Randevu saatinde"],[30,"30 dakika önce"],[60,"1 saat önce"],[180,"3 saat önce"],[1440,"1 gün önce"],[2880,"2 gün önce"],[10080,"1 hafta önce"]];
+  var DEFAULT_MSG = "Merhaba {ad}, {tarih} saat {saat} için “{baslik}” randevusunu hatırlatmak istedim.";
+
+  var state = { contacts: [], appointments: [] };
+  var db = null, mode = "pending";
+  var ui = { year: 0, sel: "", editId: null, tab: "up", q: "" };
+
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function isoOf(y, m, d) { return y + "-" + pad(m + 1) + "-" + pad(d); }
+  function todayISO() { var n = new Date(); return isoOf(n.getFullYear(), n.getMonth(), n.getDate()); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function parseISO(iso) { var p = iso.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function longDate(iso) { var d = parseISO(iso); return d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear() + ", " + FULLDOW[d.getDay()]; }
+  function shortDate(iso) { var d = parseISO(iso); return d.getDate() + " " + MONTHS[d.getMonth()].slice(0, 3); }
+  function startMs(a) { return new Date(a.date + "T" + a.time).getTime(); }
+  function leadLabel(min) { for (var i = 0; i < LEADS.length; i++) if (LEADS[i][0] === min) return LEADS[i][1]; return min + " dk önce"; }
+  function newId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function cmpAppt(a, b) { return (a.date + a.time).localeCompare(b.date + b.time); }
+  function normPhone(p) {
+    var d = String(p || "").replace(/\D/g, "");
+    if (d.indexOf("00") === 0) d = d.slice(2);
+    if (d.length === 11 && d.charAt(0) === "0") d = "90" + d.slice(1);
+    else if (d.length === 10 && d.charAt(0) === "5") d = "90" + d;
+    return d;
+  }
+  function fillMsg(a, c) {
+    var tpl = (a.message && a.message.trim()) ? a.message : DEFAULT_MSG;
+    var map = { ad: String(c.name || "").split(" ")[0], baslik: a.title, kisi: a.who || "", tarih: longDate(a.date).split(",")[0], saat: a.time };
+    return tpl.replace(/\{(ad|baslik|kisi|tarih|saat)\}/g, function (_, k) { return map[k]; });
+  }
+  function waLink(a, c) { return "https://wa.me/" + normPhone(c.phone) + "?text=" + encodeURIComponent(fillMsg(a, c)); }
+  function contactById(id) { for (var i = 0; i < state.contacts.length; i++) if (state.contacts[i].id === id) return state.contacts[i]; return null; }
+  function apptById(id) { for (var i = 0; i < state.appointments.length; i++) if (state.appointments[i].id === id) return state.appointments[i]; return null; }
+  function byDate() { var m = {}; state.appointments.forEach(function (a) { (m[a.date] = m[a.date] || []).push(a); }); return m; }
+
+  /* ---- Kayıt katmanı: bulut (db) varsa o, yoksa bu tarayıcı ---- */
+  function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function put(col, obj) {
+    if (mode === "db") {
+      var o = {}; Object.keys(obj).forEach(function (k) { if (k !== "id") o[k] = obj[k]; });
+      return db.collection(col).doc(obj.id).set(o).catch(function () { say("formStatus", "Kaydedilemedi. Biraz sonra yeniden dene.", true); });
+    }
+    var arr = state[col], i = arr.findIndex(function (x) { return x.id === obj.id; });
+    if (i >= 0) arr[i] = obj; else arr.push(obj);
+    lsSet("ajanda-" + col, arr); renderAll(); return Promise.resolve();
+  }
+  function del(col, id) {
+    if (mode === "db") return db.collection(col).doc(id).delete().catch(function () { say("formStatus", "Silinemedi. Biraz sonra yeniden dene.", true); });
+    state[col] = state[col].filter(function (x) { return x.id !== id; });
+    lsSet("ajanda-" + col, state[col]); renderAll(); return Promise.resolve();
+  }
+  function say(id, msg, isErr) { var el = $(id); el.textContent = msg; el.className = "status" + (isErr ? " err" : ""); }
+
+  /* ---- Çizim ---- */
+  function renderYear() {
+    var y = ui.year, t = todayISO(), map = byDate(), h = "";
+    $("yearLabel").textContent = y;
+    for (var m = 0; m < 12; m++) {
+      var off = (new Date(y, m, 1).getDay() + 6) % 7, dim = new Date(y, m + 1, 0).getDate(), cnt = 0, cells = "";
+      for (var i = 0; i < off; i++) cells += '<span></span>';
+      for (var d = 1; d <= dim; d++) {
+        var iso = isoOf(y, m, d), n = (map[iso] || []).length; cnt += n;
+        cells += '<button type="button" class="day' + (n ? " has" : "") + (n > 2 ? " many" : "") + (iso === t ? " today" : "") + '" data-action="pick" data-date="' + iso + '" aria-pressed="' + (iso === ui.sel) + '" aria-label="' + d + " " + MONTHS[m] + (n ? ", " + n + " randevu" : "") + '">' + d + "</button>";
+      }
+      h += '<section class="month"><h3><span>' + MONTHS[m] + '</span><span class="mc">' + (cnt ? cnt + " randevu" : "") + '</span></h3><div class="dow">' + DOW.map(function (x) { return "<span>" + x.slice(0, 2) + "</span>"; }).join("") + '</div><div class="days">' + cells + "</div></section>";
+    }
+    $("year").innerHTML = h;
+  }
+  function renderDay() {
+    var d = parseISO(ui.sel);
+    $("dayHead").innerHTML = '<div class="num">' + d.getDate() + '</div><div class="txt"><b>' + FULLDOW[d.getDay()] + '</b><span>' + MONTHS[d.getMonth()] + " " + d.getFullYear() + "</span></div>";
+    var list = state.appointments.filter(function (a) { return a.date === ui.sel; }).sort(cmpAppt);
+    if (!list.length) { $("dayList").innerHTML = '<div class="empty">Bu gün için randevu yok. Aşağıdaki formdan ekleyebilirsin.</div>'; return; }
+    $("dayList").innerHTML = list.map(function (a) {
+      var names = (a.contactIds || []).map(contactById).filter(Boolean).map(function (c) { return '<span class="tag">' + esc(c.name) + "</span>"; }).join("");
+      return '<article class="appt"><div class="time">' + esc(a.time) + '</div><div><div class="title">' + esc(a.title) + '</div><div class="meta">' + (a.who ? esc(a.who) + " · " : "") + esc(leadLabel(a.lead)) + " hatırlat</div></div>" +
+        '<div class="who">' + (names || '<span class="meta">Bildirim kişisi seçilmedi</span>') + "</div>" +
+        '<div class="acts"><button type="button" class="btn small" data-action="edit" data-id="' + a.id + '">Düzenle</button><button type="button" class="btn small danger" data-action="del" data-id="' + a.id + '">Sil</button></div></article>';
+    }).join("");
+  }
+  function dueList() {
+    var now = Date.now();
+    return state.appointments.filter(function (a) {
+      var s = startMs(a); return now >= s - (a.lead || 0) * 60000 && now <= s + 2 * 3600000;
+    }).sort(cmpAppt);
+  }
+  function renderDue() {
+    var list = dueList();
+    if (!list.length) { $("dueList").innerHTML = '<div class="empty">Şu an zamanı gelmiş hatırlatma yok.</div>'; return; }
+    $("dueList").innerHTML = list.map(function (a) {
+      var rows = (a.contactIds || []).map(contactById).filter(Boolean).map(function (c) {
+        var sent = !!(a.sent && a.sent[c.id]);
+        return '<div class="send-row"><div class="who"><span>' + esc(c.name) + "</span><small>" + esc(c.phone) + '</small></div>' +
+          '<a class="wa" href="' + waLink(a, c) + '" target="_blank" rel="noopener">WhatsApp’ta aç</a>' +
+          '<button type="button" class="btn small" data-action="toggle-sent" data-id="' + a.id + '" data-c="' + c.id + '" aria-pressed="' + sent + '">' + (sent ? "Gönderdim ✓" : "Gönderdim olarak işaretle") + "</button></div>";
+      }).join("");
+      return '<article class="due-card"><div class="due-top"><b>' + esc(a.title) + '</b><span class="mono">' + esc(a.time) + '</span></div><p class="sub">' + (a.who ? esc(a.who) + " · " : "") + esc(longDate(a.date)) + "</p>" + (rows || '<div class="empty">Bu randevuya kişi seçilmemiş.</div>') + "</article>";
+    }).join("");
+  }
+  function renderPast() {
+    var now = Date.now(), q = (ui.q || "").trim().toLocaleLowerCase("tr");
+    var list = state.appointments.filter(function (a) {
+      if (startMs(a) >= now) return false;
+      if (!q) return true;
+      var names = (a.contactIds || []).map(contactById).filter(Boolean).map(function (c) { return c.name; }).join(" ");
+      return (a.title + " " + (a.who || "") + " " + names).toLocaleLowerCase("tr").indexOf(q) >= 0;
+    }).sort(function (a, b) { return cmpAppt(b, a); });
+    if (!list.length) { $("upList").innerHTML = '<div class="empty">' + (q ? "Aramana uyan geçmiş randevu yok." : "Geçmişte kayıtlı randevu yok.") + "</div>"; return; }
+    var h = "", last = "";
+    list.forEach(function (a) {
+      var d = parseISO(a.date), key = MONTHS[d.getMonth()] + " " + d.getFullYear();
+      if (key !== last) { h += "<h3>" + key + "</h3>"; last = key; }
+      var ids = (a.contactIds || []).filter(function (id) { return contactById(id); });
+      var sent = ids.filter(function (id) { return a.sent && a.sent[id]; }).length;
+      var meta = (a.who ? esc(a.who) : "") + (ids.length ? (a.who ? " · " : "") + sent + "/" + ids.length + " gönderildi" : "");
+      h += '<button type="button" data-action="goto" data-date="' + a.date + '"><span class="d">' + shortDate(a.date) + '</span><span class="t">' + esc(a.time) + '</span><span class="n">' + esc(a.title) + "</span>" + (meta ? '<span class="m">' + meta + "</span>" : "") + "</button>";
+    });
+    $("upList").innerHTML = h;
+  }
+  function renderUpcoming() {
+    if (ui.tab === "past") { renderPast(); return; }
+    var now = Date.now();
+    var list = state.appointments.filter(function (a) { return startMs(a) >= now; }).sort(cmpAppt).slice(0, 6);
+    if (!list.length) { $("upList").innerHTML = '<div class="empty">Yaklaşan randevu yok.</div>'; return; }
+    $("upList").innerHTML = list.map(function (a) {
+      return '<button type="button" data-action="goto" data-date="' + a.date + '"><span class="d">' + shortDate(a.date) + '</span><span class="t">' + esc(a.time) + '</span><span class="n">' + esc(a.title) + "</span></button>";
+    }).join("");
+  }
+  function renderPick() {
+    var checked = {}; document.querySelectorAll("#pick input:checked").forEach(function (i) { checked[i.value] = true; });
+    if (!state.contacts.length) { $("pick").innerHTML = '<span class="note">Önce aşağıdaki Kişiler bölümünden kişi ekle.</span>'; return; }
+    $("pick").innerHTML = state.contacts.map(function (c) {
+      return '<label class="chip"><input type="checkbox" name="notify" value="' + c.id + '"' + (checked[c.id] ? " checked" : "") + ">" + esc(c.name) + "</label>";
+    }).join("");
+  }
+  function renderContacts() {
+    if (!state.contacts.length) { $("contactList").innerHTML = '<div class="empty">Henüz kişi eklenmedi.</div>'; return; }
+    $("contactList").innerHTML = state.contacts.map(function (c) {
+      return '<div class="crow"><div class="nm"><span>' + esc(c.name) + "</span><small>" + esc(c.phone) + '</small></div><button type="button" class="btn small danger" data-action="cdel" data-id="' + c.id + '">Sil</button></div>';
+    }).join("");
+  }
+  function renderAll() { renderYear(); renderDay(); renderDue(); renderUpcoming(); renderPick(); renderContacts(); }
+
+  /* ---- Form ---- */
+  function resetForm() {
+    ui.editId = null; $("apptForm").reset(); $("f-date").value = ui.sel; $("f-time").value = "10:00";
+    $("formTitle").textContent = "Randevu ekle"; $("saveBtn").textContent = "Kaydet"; $("cancelEdit").hidden = true;
+    document.querySelectorAll("#pick input").forEach(function (i) { i.checked = false; });
+  }
+  function startEdit(id) {
+    var a = apptById(id); if (!a) return;
+    ui.editId = id; $("f-title").value = a.title; $("f-who").value = a.who || ""; $("f-date").value = a.date; $("f-time").value = a.time;
+    $("f-lead").value = String(a.lead || 0); $("f-msg").value = a.message || "";
+    document.querySelectorAll("#pick input").forEach(function (i) { i.checked = (a.contactIds || []).indexOf(i.value) >= 0; });
+    $("formTitle").textContent = "Randevuyu düzenle"; $("saveBtn").textContent = "Güncelle"; $("cancelEdit").hidden = false;
+    say("formStatus", "");
+    $("apptForm").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  $("apptForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var title = $("f-title").value.trim(), date = $("f-date").value, time = $("f-time").value;
+    if (!title || !date || !time) { say("formStatus", "Başlık, tarih ve saat gerekli.", true); return; }
+    var old = ui.editId ? apptById(ui.editId) : null;
+    var ids = Array.prototype.map.call(document.querySelectorAll("#pick input:checked"), function (i) { return i.value; });
+    var timeChanged = old && (old.date !== date || old.time !== time || (old.lead || 0) !== +$("f-lead").value);
+    var obj = {
+      id: old ? old.id : newId("a"), title: title, who: $("f-who").value.trim(), date: date, time: time,
+      lead: +$("f-lead").value, contactIds: ids, message: $("f-msg").value.trim(), sent: (old && !timeChanged) ? (old.sent || {}) : {}
+    };
+    put("appointments", obj).then(function () {
+      ui.sel = date; ui.year = parseISO(date).getFullYear();
+      resetForm(); say("formStatus", "Kaydedildi.");
+      renderAll();
+    });
+  });
+  $("contactForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("c-name").value.trim(), phone = $("c-phone").value.trim();
+    if (normPhone(phone).length < 11) { say("contactStatus", "Numara eksik görünüyor. Alan kodu ile birlikte yaz.", true); return; }
+    put("contacts", { id: newId("c"), name: name, phone: phone }).then(function () {
+      $("contactForm").reset(); say("contactStatus", "Kişi eklendi.");
+    });
+  });
+
+  /* ---- Tıklamalar ---- */
+  var armTimer = null;
+  $("q").addEventListener("input", function () { ui.q = this.value; renderUpcoming(); });
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-action]"); if (!el) return;
+    var act = el.getAttribute("data-action"), id = el.getAttribute("data-id");
+    if (act === "pick" || act === "goto") {
+      ui.sel = el.getAttribute("data-date"); ui.year = parseISO(ui.sel).getFullYear();
+      if (!ui.editId) $("f-date").value = ui.sel;
+      renderYear(); renderDay();
+    } else if (act === "prev-year" || act === "next-year") {
+      ui.year += act === "next-year" ? 1 : -1; renderYear();
+    } else if (act === "today") {
+      ui.sel = todayISO(); ui.year = parseISO(ui.sel).getFullYear(); if (!ui.editId) $("f-date").value = ui.sel; renderYear(); renderDay();
+    } else if (act === "tab") {
+      ui.tab = el.getAttribute("data-tab");
+      document.querySelectorAll('[data-action="tab"]').forEach(function (b) { b.setAttribute("aria-pressed", String(b === el)); });
+      $("searchWrap").hidden = ui.tab !== "past";
+      renderUpcoming();
+    } else if (act === "edit") { startEdit(id);
+    } else if (act === "cancel-edit") { resetForm(); say("formStatus", "");
+    } else if (act === "del" || act === "cdel") {
+      if (el.getAttribute("data-armed") !== "1") {
+        el.setAttribute("data-armed", "1"); el.textContent = "Silmek için tekrar dokun";
+        clearTimeout(armTimer); armTimer = setTimeout(function () { el.removeAttribute("data-armed"); el.textContent = "Sil"; }, 4000);
+      } else {
+        if (act === "del") { if (ui.editId === id) resetForm(); del("appointments", id); }
+        else { del("contacts", id); }
+      }
+    } else if (act === "toggle-sent") {
+      var a = apptById(id), cid = el.getAttribute("data-c"); if (!a) return;
+      var sent = Object.assign({}, a.sent || {}); if (sent[cid]) delete sent[cid]; else sent[cid] = true;
+      put("appointments", Object.assign({}, a, { sent: sent }));
+    }
+  });
+
+  /* ---- Başlangıç ---- */
+  function loadLocal() { state.contacts = lsGet("ajanda-contacts"); state.appointments = lsGet("ajanda-appointments"); }
+  function toDocs(snap) { return snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }); }
+  function modeNote() {
+    $("modeNote").textContent = mode === "db" ? "Kayıtların bulutta saklanıyor, her cihazdan aynı ajandayı görürsün." : "Kayıtlar yalnızca bu tarayıcıda saklanıyor.";
+  }
+  (function init() {
+    var n = new Date(); ui.year = n.getFullYear(); ui.sel = todayISO();
+    var sel = $("f-lead"); sel.innerHTML = LEADS.map(function (l) { return '<option value="' + l[0] + '">' + l[1] + "</option>"; }).join(""); sel.value = "60";
+    $("f-date").value = ui.sel;
+    renderAll();
+    var p = (window.claude && window.claude.use) ? window.claude.use("db") : Promise.resolve(null);
+    Promise.resolve(p).catch(function () { return null; }).then(function (d) {
+      if (!d) { mode = "local"; loadLocal(); modeNote(); renderAll(); return; }
+      db = d; mode = "db"; modeNote();
+      var fail = function () { mode = "local"; loadLocal(); modeNote(); renderAll(); };
+      d.collection("contacts").onSnapshot(function (s) { state.contacts = toDocs(s); renderPick(); renderContacts(); renderDay(); renderDue(); }, fail);
+      d.collection("appointments").onSnapshot(function (s) { state.appointments = toDocs(s); renderYear(); renderDay(); renderDue(); renderUpcoming(); }, fail);
+    });
+    setInterval(function () { renderDue(); renderUpcoming(); }, 30000);
+  })();
+})();
+</script>
+
+</body></html>
